@@ -9,7 +9,7 @@ on:
 jobs:
   compileLinuxArm64:
     name: Compile for Linux Arm64
-    runs-on: buildjet-2vcpu-ubuntu-2204-arm
+    runs-on: ubuntu-latest
 
     steps:
       - name: Set up QEMU
@@ -44,6 +44,10 @@ jobs:
           go build \
             -ldflags "-extldflags -static -X main.VERSION=${VERSION##*/v}" \
             -o dist/authn-linux-arm64
+      - uses: actions/upload-artifact@v2
+        with:
+          name: authn-linux-arm64
+          path: dist/authn-linux-arm64
 
   # compileLinuxArm64:
   #   name: Compile for Linux Arm64
@@ -73,10 +77,10 @@ jobs:
   #         GOARCH: arm64
   #         CGO_ENABLED: 1
 
-  #     - uses: actions/upload-artifact@v2
-  #       with:
-  #         name: authn-linux-arm64
-  #         path: dist/authn-linux-arm64
+  # - uses: actions/upload-artifact@v2
+  #   with:
+  #     name: authn-linux-arm64
+  #     path: dist/authn-linux-arm64
 
   release:
     name: Create Release
