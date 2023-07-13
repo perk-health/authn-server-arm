@@ -6,8 +6,8 @@ on:
       - "v*"
 
 jobs:
-  linux64:
-    name: Compile for Linux
+  compileLinuxAmd64:
+    name: Compile for Linux AMD 64
     runs-on: ubuntu-latest
 
     steps:
@@ -32,7 +32,7 @@ jobs:
         with:
           name: authn-linux64
           path: dist/authn-linux64
-  linuxArm64:
+  compileLinuxArm64:
     name: Compile for Linux Arm64
     runs-on: ubuntu-latest
 
