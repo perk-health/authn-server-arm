@@ -7,42 +7,25 @@ on:
   workflow_dispatch:
 
 jobs:
-  # compileLinuxAmd64:
-  #   name: Compile for Linux AMD 64
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-go@v2
-  #       with:
-  #         go-version: ^1.17
-  #     - run: go mod download
-
-  #     - name: compile
-  #       run: |
-  #         go build \
-  #           -ldflags "-extldflags -static -X main.VERSION=${VERSION##*/v}" \
-  #           -o dist/authn-linux64
-  #       env:
-  #         VERSION: ${{ github.ref }}
-  #         GOOS: linux
-  #         GOARCH: amd64
-  #         CGO_ENABLED: 1
-
-  #     - uses: actions/upload-artifact@v2
-  #       with:
-  #         name: authn-linux64
-  #         path: dist/authn-linux64
-
   compileLinuxArm64:
     name: Compile for Linux Arm64
     runs-on: buildjet-2vcpu-ubuntu-2204-arm
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v2
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
         with:
           go-version: ^1.17
+
       - name: Mod download
         env:
           VERSION: ${{ github.ref }}
@@ -51,77 +34,49 @@ jobs:
           CGO_ENABLED: 1
         run: go mod download
 
-      - name: compile
-        run: |
-          go build \
-            -ldflags "-extldflags -static -X main.VERSION=${VERSION##*/v}" \
-            -o dist/authn-linux-arm64
+      - name: Compile
         env:
           VERSION: ${{ github.ref }}
           GOOS: linux
           GOARCH: arm64
           CGO_ENABLED: 1
+        run: |
+          go build \
+            -ldflags "-extldflags -static -X main.VERSION=${VERSION##*/v}" \
+            -o dist/authn-linux-arm64
 
-      - uses: actions/upload-artifact@v2
-        with:
-          name: authn-linux-arm64
-          path: dist/authn-linux-arm64
-
-  # windows64:
-  #   name: Compile for Windows
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-go@v2
-  #       with:
-  #         go-version: ^1.17
-  #     - run: go mod download
-  #     - run: sudo apt install mingw-w64
-
-  #     - name: compile
-  #       run: |
-  #         go build \
-  #           -ldflags "-X main.VERSION=${VERSION##*/v}" \
-  #           -o dist/authn-windows64.exe
-  #       env:
-  #         VERSION: ${{ github.ref }}
-  #         GOOS: windows
-  #         GOARCH: amd64
-  #         CGO_ENABLED: 1
-  #         CC: x86_64-w64-mingw32-gcc
-
-  #     - uses: actions/upload-artifact@v2
-  #       with:
-  #         name: authn-windows64.exe
-  #         path: dist/authn-windows64.exe
-
-  # macos64:
-  #   name: Compile for MacOS
-  #   runs-on: macos-latest
+  # compileLinuxArm64:
+  #   name: Compile for Linux Arm64
+  #   runs-on: buildjet-2vcpu-ubuntu-2204-arm
 
   #   steps:
   #     - uses: actions/checkout@v2
   #     - uses: actions/setup-go@v2
   #       with:
   #         go-version: ^1.17
-  #     - run: go mod download
+  #     - name: Mod download
+  #       env:
+  #         VERSION: ${{ github.ref }}
+  #         GOOS: linux
+  #         GOARCH: arm64
+  #         CGO_ENABLED: 1
+  #       run: go mod download
 
   #     - name: compile
   #       run: |
   #         go build \
-  #           -ldflags "-X main.VERSION=${VERSION##*/v}" \
-  #           -o dist/authn-macos64
+  #           -ldflags "-extldflags -static -X main.VERSION=${VERSION##*/v}" \
+  #           -o dist/authn-linux-arm64
   #       env:
   #         VERSION: ${{ github.ref }}
-  #         GOOS: darwin
-  #         GOARCH: amd64
+  #         GOOS: linux
+  #         GOARCH: arm64
   #         CGO_ENABLED: 1
 
   #     - uses: actions/upload-artifact@v2
   #       with:
-  #         name: authn-macos64
-  #         path: dist/authn-macos64
+  #         name: authn-linux-arm64
+  #         path: dist/authn-linux-arm64
 
   release:
     name: Create Release
