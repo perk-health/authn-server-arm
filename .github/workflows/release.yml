@@ -55,7 +55,7 @@ jobs:
         run: |
           go build \
             -ldflags "-extldflags -static -X main.VERSION=${VERSION##*/v}" \
-            -o dist/authn-linux64
+            -o dist/authn-linux-arm64
         env:
           VERSION: ${{ github.ref }}
           GOOS: linux
